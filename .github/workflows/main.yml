@@ -3,7 +3,7 @@ name: Pipeline CI/CD Completo - Microservicio Java 21
 on:
   push:
     branches: [ master ]
-      workflow_dispatch:  
+  workflow_dispatch:  
 
 jobs:
   ci-build-and-test:
