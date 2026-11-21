@@ -10,6 +10,7 @@ import cl.duoc.ms_picking_service.service.exception.OrdenPickingNoEncontradaExce
 import cl.duoc.ms_picking_service.service.exception.OrdenPickingYaExisteException;
 import cl.duoc.ms_picking_service.service.exception.OrdenYaDespachadaException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,7 +35,12 @@ public class PickingService {
             throw new OrdenPickingYaExisteException(request.ordenId());
         }
         OrdenPicking orden = OrdenPicking.nuevaDisponible(request.ordenId(), request.comercioId());
-        return OrdenPickingResponse.desde(repository.save(orden));
+        try {
+            return OrdenPickingResponse.desde(repository.save(orden));
+        } catch (DuplicateKeyException ex) {
+            // Dos peticiones simultáneas pueden pasar el existsBy: el índice único es la garantía real.
+            throw new OrdenPickingYaExisteException(request.ordenId());
+        }
     }
 
     public DespachoResponse registrarDespacho(String ordenId) {
