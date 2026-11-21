@@ -60,9 +60,9 @@ Importa o crea las siguientes 3 peticiones:
 
 | Método | URL | Body (raw JSON) | Resultado esperado |
 |---|---|---|---|
-| `POST` | `http://localhost:8084/picking/ordenes` | `{"ordenId":"ORD-001","comercioId":"COM-001"}` | `201 Created`, orden en estado `DISPONIBLE` |
-| `GET` | `http://localhost:8084/picking/ordenes` | — | `200 OK`, lista con `ORD-001` |
-| `POST` | `http://localhost:8084/picking/ordenes/ORD-001/despacho` | — | `200 OK`, con `numeroSeguimiento` generado |
+| `POST` | `http://localhost:8084/v1/picking/ordenes` | `{"ordenId":"ORD-001","comercioId":"COM-001"}` | `201 Created`, orden en estado `DISPONIBLE` |
+| `GET` | `http://localhost:8084/v1/picking/ordenes` | — | `200 OK`, lista con `ORD-001` |
+| `POST` | `http://localhost:8084/v1/picking/ordenes/ORD-001/despacho` | — | `200 OK`, con `numeroSeguimiento` generado |
 | `GET` | `http://localhost:8084/actuator/info` | — | `200 OK`, con la versión `1.0.0` |
 
 Para comprobar el manejo de errores, repite el primer `POST` con el mismo `ordenId` — debe responder `409 Conflict`.

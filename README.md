@@ -18,9 +18,9 @@ Microservicio de picking y despacho de BodegaNube. **Versión actual: 1.0.0**
 ## Endpoints
 
 ```http
-POST /picking/ordenes                 (uso interno, invocado por ms-ordenes)
-GET  /picking/ordenes
-POST /picking/ordenes/{ordenId}/despacho
+POST /v1/picking/ordenes                 (uso interno, invocado por ms-ordenes)
+GET  /v1/picking/ordenes
+POST /v1/picking/ordenes/{ordenId}/despacho
 ```
 
 Operativos (Actuator):

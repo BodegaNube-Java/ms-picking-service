@@ -4,7 +4,7 @@ info:
   description: Microservicio de picking y despacho de BodegaNube.
   version: 1.0.0
 servers:
-  - url: /picking
+  - url: /v1/picking
 paths:
   /ordenes:
     get:
