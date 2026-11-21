@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: ms-picking-service
   description: Microservicio de picking y despacho de BodegaNube.
-  version: 0.0.1
+  version: 1.0.0
 servers:
   - url: /picking
 paths:
@@ -14,6 +14,21 @@ paths:
       responses:
         "200":
           description: Listado de órdenes disponibles para picking.
+    post:
+      summary: Registra una orden como disponible para picking (uso interno, invocado por ms-ordenes).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrdenDisponibleRequest"
+      responses:
+        "201":
+          description: Orden registrada en estado DISPONIBLE.
+        "400":
+          description: Datos inválidos (ordenId o comercioId vacíos).
+        "409":
+          description: Ya existe una orden de picking para ese ordenId.
   /ordenes/{id}/despacho:
     post:
       summary: Registra el despacho de una orden y genera el número de seguimiento.
@@ -30,9 +45,20 @@ paths:
           description: Despacho registrado.
         "404":
           description: Orden no encontrada.
+        "409":
+          description: La orden ya fue despachada.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    OrdenDisponibleRequest:
+      type: object
+      required: [ordenId, comercioId]
+      properties:
+        ordenId:
+          type: string
+        comercioId:
+          type: string
