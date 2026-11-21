@@ -1,0 +1,66 @@
+# Stack para Docker Swarm.
+# Desplegar:   docker stack deploy -c docker-compose.yml bodeganube
+# Ver guía completa en README.md ("Despliegue en Docker Swarm").
+#
+# Variables opcionales (se leen del entorno donde se ejecuta docker stack deploy):
+#   PICKING_IMAGE     imagen a desplegar   (default: última versión publicada)
+#   PICKING_REPLICAS  número de réplicas    (default: 2)
+version: "3.9"
+
+services:
+  ms-picking:
+    image: ${PICKING_IMAGE:-ghcr.io/bodeganube-java/ms-picking-service:latest}
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/ms_picking
+    ports:
+      - target: 8084
+        published: 8084
+        protocol: tcp
+        mode: ingress          # routing mesh: cualquier nodo del clúster atiende el puerto
+    networks:
+      - backend
+    depends_on:
+      - mongo
+    deploy:
+      mode: replicated
+      replicas: ${PICKING_REPLICAS:-2}
+      update_config:
+        parallelism: 1          # actualiza de una réplica en una
+        order: start-first      # levanta la nueva antes de bajar la vieja: sin caída
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s               # sin max_attempts: si Mongo tarda en arrancar, la réplica reintenta hasta conectar
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend
+    deploy:
+      mode: replicated
+      replicas: 1               # una sola instancia: el volumen es local a un nodo
+      placement:
+        constraints:
+          - node.role == manager  # fija Mongo al manager para que siempre encuentre su volumen
+      restart_policy:
+        condition: on-failure
+
+networks:
+  backend:
+    driver: overlay
+    attachable: false
+
+volumes:
+  mongo-data:
