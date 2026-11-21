@@ -37,7 +37,7 @@ class PickingControllerTest {
         when(pickingService.registrarOrdenDisponible(any())).thenReturn(
                 new OrdenPickingResponse("ORD-001", "COM-001", EstadoPicking.DISPONIBLE, LocalDateTime.now()));
 
-        mvc.perform(post("/picking/ordenes")
+        mvc.perform(post("/v1/picking/ordenes")
                         .contentType("application/json")
                         .content("{\"ordenId\":\"ORD-001\",\"comercioId\":\"COM-001\"}"))
                 .andExpect(status().isCreated())
@@ -46,7 +46,7 @@ class PickingControllerTest {
 
     @Test
     void postOrdenSinCamposObligatoriosDevuelve400() throws Exception {
-        mvc.perform(post("/picking/ordenes")
+        mvc.perform(post("/v1/picking/ordenes")
                         .contentType("application/json")
                         .content("{\"ordenId\":\"\",\"comercioId\":\"\"}"))
                 .andExpect(status().isBadRequest());
@@ -57,7 +57,7 @@ class PickingControllerTest {
         when(pickingService.registrarOrdenDisponible(any()))
                 .thenThrow(new OrdenPickingYaExisteException("ORD-001"));
 
-        mvc.perform(post("/picking/ordenes")
+        mvc.perform(post("/v1/picking/ordenes")
                         .contentType("application/json")
                         .content("{\"ordenId\":\"ORD-001\",\"comercioId\":\"COM-001\"}"))
                 .andExpect(status().isConflict())
@@ -70,7 +70,7 @@ class PickingControllerTest {
         when(pickingService.listarDisponibles()).thenReturn(List.of(
                 new OrdenPickingResponse("ORD-001", "COM-001", EstadoPicking.DISPONIBLE, LocalDateTime.now())));
 
-        mvc.perform(get("/picking/ordenes"))
+        mvc.perform(get("/v1/picking/ordenes"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].ordenId").value("ORD-001"));
     }
@@ -80,7 +80,7 @@ class PickingControllerTest {
         when(pickingService.registrarDespacho(anyString())).thenReturn(
                 new DespachoResponse("ORD-001", "BN-1A2B3C4D", LocalDateTime.now()));
 
-        mvc.perform(post("/picking/ordenes/ORD-001/despacho"))
+        mvc.perform(post("/v1/picking/ordenes/ORD-001/despacho"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.numeroSeguimiento").value("BN-1A2B3C4D"));
     }
@@ -90,7 +90,7 @@ class PickingControllerTest {
         when(pickingService.registrarDespacho(anyString()))
                 .thenThrow(new OrdenPickingNoEncontradaException("ORD-X"));
 
-        mvc.perform(post("/picking/ordenes/ORD-X/despacho"))
+        mvc.perform(post("/v1/picking/ordenes/ORD-X/despacho"))
                 .andExpect(status().isNotFound());
     }
 }
