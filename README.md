@@ -56,7 +56,7 @@ Reglas del proyecto:
 2. Cada release se publica con un tag Git `vX.Y.Z` que **debe coincidir** con el `pom.xml`; si no coincide, el pipeline falla.
 3. Las imágenes Docker se etiquetan así:
    - `ghcr.io/bodeganube-java/ms-picking-service:X.Y.Z` y `:latest` → releases (tag `vX.Y.Z`).
-   - `ghcr.io/bodeganube-java/ms-picking-service:X.Y.Z-<sha7>` → cada build de `master`. Son inmutables y es la que se despliega.
+   - `ghcr.io/bodeganube-java/ms-picking-service:X.Y.Z-<sha7>` → cada build de `main`. Son inmutables y es la que se despliega.
 4. Las versiones desplegadas se verifican en `/actuator/info`.
 
 ## Roles
@@ -185,7 +185,7 @@ El routing mesh de Swarm balancea las peticiones entre todas las réplicas, sin 
 
 ## CI/CD
 
-Definido en [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml). Se ejecuta en PRs, en pushes a `master`, en tags `vX.Y.Z` y manualmente.
+Definido en [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml). Se ejecuta en PRs, en pushes a `main`, en tags `vX.Y.Z` y manualmente.
 
 | Etapa | Qué hace |
 |---|---|
@@ -193,7 +193,7 @@ Definido en [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml). Se eje
 | CD – imagen | Calcula la versión, construye la imagen y la publica en GHCR |
 | CD – Swarm | Copia `docker-compose.yml` al manager por SSH, despliega el stack, espera a que las réplicas estén arriba y valida `/actuator/health` y la versión en `/actuator/info` |
 
-Las etapas de CD de imagen y despliegue sólo corren en `master` o en tags, no en PRs.
+Las etapas de CD de imagen y despliegue sólo corren en `main` o en tags, no en PRs.
 
 ### Secretos y entorno
 
@@ -212,7 +212,7 @@ Configurar en **Settings → Secrets and variables → Actions**, con un entorno
 ### Publicar una versión
 
 ```bash
-# 1. Subir el número en pom.xml (y openapi.yaml) y hacer merge a master
+# 1. Subir el número en pom.xml (y openapi.yaml) y hacer push a main
 # 2. Crear el tag que coincide con esa versión
 git tag v1.0.0
 git push origin v1.0.0

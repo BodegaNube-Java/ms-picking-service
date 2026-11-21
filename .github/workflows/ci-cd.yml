@@ -2,10 +2,10 @@ name: CI/CD ms-picking-service
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     tags: ["v*.*.*"]
   pull_request:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -94,7 +94,7 @@ jobs:
             TAGS="${IMAGE}:${VERSION},${IMAGE}:latest"
             DEPLOY_TAG="${VERSION}"
           else
-            # Build de master: tag inmutable por commit
+            # Build de main: tag inmutable por commit
             TAGS="${IMAGE}:${VERSION}-${SHORT_SHA}"
             DEPLOY_TAG="${VERSION}-${SHORT_SHA}"
           fi
@@ -132,7 +132,7 @@ jobs:
   deploy:
     name: CD - desplegar en Docker Swarm
     needs: package
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     environment: production
     env:
