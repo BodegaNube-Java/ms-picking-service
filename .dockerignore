@@ -1,5 +1,14 @@
+# Artefactos de build y control de versiones: no deben entrar al contexto de Docker
 target/
-.mvn/wrapper/maven-wrapper.jar
+.git/
+.github/
 .idea/
 *.iml
 .vscode/
+.mvn/wrapper/maven-wrapper.jar
+
+# Documentación y archivos de despliegue que no se usan dentro de la imagen
+*.md
+docker-compose.yml
+scripts/
+infra/
